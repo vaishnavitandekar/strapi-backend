@@ -33,7 +33,10 @@ resource "aws_instance" "strapi" {
   instance_type = "t3.micro"
   key_name      = "vaishnavi-strapi-key"     
 
-  user_data = file("${path.module}/user_data.sh")
+  # Render user_data from template file and pass docker_image_tag
+  user_data = templatefile("${path.module}/user_data.sh.tpl", {
+    docker_image_tag = var.docker_image_tag
+  })
 
   vpc_security_group_ids = [
     aws_security_group.strapi_sg.id

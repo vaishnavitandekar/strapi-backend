@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production
+    environment: production 
 
     steps:
       - name: Checkout Repo
@@ -33,7 +33,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve -var "docker_image_tag=latest"
+        run: terraform apply -auto-approve -var "docker_image_tag=${{ github.event.inputs.IMAGE_TAG }}"
 
       - name: Deploy Strapi container on EC2
         uses: appleboy/ssh-action@v0.1.9
@@ -42,6 +42,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_KEY }}
           script: |
+            # Create .env file with secrets
             cat <<EOT > /home/ec2-user/strapi.env
             HOST=0.0.0.0
             PORT=1337
@@ -63,6 +64,8 @@ jobs:
             DATABASE_SSL=${{ secrets.DATABASE_SSL }}
             EOT
 
+            # Remove old container if exists
             docker rm -f strapi || true
-            
+
+            # Run new Strapi container with specified image tag
             docker run -d --name strapi --env-file /home/ec2-user/strapi.env -p 1337:1337 vaishnavi0009/strapi-backend:${{ github.event.inputs.IMAGE_TAG }}

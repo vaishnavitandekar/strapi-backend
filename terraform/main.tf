@@ -30,7 +30,7 @@ resource "aws_security_group" "strapi_sg" {
 
 resource "aws_instance" "strapi" {
   ami           = "ami-068c0051b15cdb816"    
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   key_name      = "vaishnavi-strapi-key"     
 
   user_data = file("${path.module}/user_data.sh")

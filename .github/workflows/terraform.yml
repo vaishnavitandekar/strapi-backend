@@ -33,8 +33,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve \
-          -var "docker_image_tag=${{ github.event.inputs.IMAGE_TAG }}"
+        run: terraform apply -auto-approve -var "docker_image_tag=latest"
 
       - name: Deploy Strapi container on EC2
         uses: appleboy/ssh-action@v0.1.9
